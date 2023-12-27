@@ -2,3 +2,8 @@
 
 # Url del dataset:
 https://www.kaggle.com/datasets/joebeachcapital/coronavirus-covid-19-cases-daily-updates/data
+
+
+# Gif:
+
+![Ejemplo de GIF](Storytelling.gif)
