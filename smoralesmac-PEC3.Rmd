@@ -1,0 +1,79 @@
+---
+title: 'Visualización de datos - PEC3'
+author: "Autor: Sergio Morales Machado"
+date: "Diciembre 2023"
+output:
+  html_document:
+    highlight: default
+    number_sections: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 2
+    includes:
+      in_header: 75.584-PEC-header.html
+  word_document: default
+  pdf_document:
+    highlight: zenburn
+    toc: yes
+---
+
+```{r}
+# Lee el archivo CSV
+datos <- read.csv("Coronavirus_cases_daily_update.csv")
+datos$date <- as.Date(datos$date, format = "%Y-%m-%d")
+
+```
+
+
+
+```{r}
+datos <- datos[datos$date <= as.Date("2023-06-05"), ]
+datos <- datos[!(datos$location %in% c("Europe", "World", "High income", "North America", "European Union", "Upper middle income", "South America", "Lower middle income", "Asia", "Africa", "Low income", "Oceania")), ]
+
+
+```
+
+
+```{r}
+count = 1
+```
+
+
+```{r}
+if (!require("ggplot2")) install.packages("ggplot2"); library(ggplot2)
+if (!require("plotly")) install.packages("plotly"); library(plotly)
+if (!require("gganimate")) install.packages("gganimate"); library(gganimate)
+if (!require("magick")) install.packages("magick"); library(magick)
+if (!require("magrittr")) install.packages("magrittr"); library(magrittr)
+
+locs <- data.frame(x = datos$total_cases,
+                   y = datos$total_deaths,
+                   LDT = datos$date,
+                   pais = datos$location,
+                   region = datos$continent,
+                   population = datos$population_density)
+
+g <- ggplot(locs, aes(x, y, color = region, size = population,
+                      text =   paste("Country: ", pais, "<br>",
+                                      "Region: ", region, "<br>")
+                      )) +
+  geom_point(alpha = 0.5) +
+  geom_text(aes(label = pais), vjust = 2, size = 3)+
+  theme_void() +
+  scale_x_log10(labels = scales::comma_format()) +
+  scale_y_log10(labels = scales::comma_format()) +
+  labs(title = 'World Covid Evolution',
+       x = 'Total cases',
+       y = 'Total deaths',
+       subtitle = 'Date: {frame_time}',
+       color = 'Region',
+       size = 'Population') +
+   theme(axis.text = element_text(size = 8),
+        axis.title = element_text(size = 10),
+        plot.title = element_text(size = 12, face = "bold"))
+
+count = count + 1 
+anim <- g + transition_time(LDT)
+myAnimation <- animate(anim, duration = 40, fps = 30, width = 2000, height = 1000, renderer = gifski_renderer(), res = 100)
+anim_save(paste("test_all", count, ".gif"), animation = myAnimation)
+```
