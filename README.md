@@ -6,4 +6,6 @@ https://www.kaggle.com/datasets/joebeachcapital/coronavirus-covid-19-cases-daily
 
 # Gif:
 
+Miniatura del gif (para una version más grande se puede descargar directamente):
 ![Ejemplo de GIF](Storytelling.gif)
+
